@@ -5,21 +5,29 @@ Promise-based contract objects used by the uport system. For Node and the browse
 If you would instead like to see the solidity contract code that is used by this library, or a 'bare bones' library that does not require Web3, see [uport-contracts](https://github.com/zmitton/uport-contracts) instead.
 
 ### Install
+NPM
 ```
 $ npm install uport-contracts-js
 ```
-
+EASY MODE: download the `dist.js` and in your HTML file
+```html
+<html>
+  <head> <script type="text/javascript" src="dist.js"></script> </head>
+  <body> This page has global access to "Uport" (or "window.Uport") </body>
+</html>
+```
 ### Initialization
 
 First, set up a new web3 provider instance. Then require("uport-contracts-js") and create the Uport contract-objects with this provider
 
 ```javascript
-const Web3 = require('web3')
-const Uport = require('./index'); //change to require('uport-contracts-js')
+const Web3  = require('web3')
+const Uport = require('uport-contracts-js')
 
-var uport = new Uport(new Web3.providers.HttpProvider('https://kovan.infura.io/'))
+var uport   = new Uport(new Web3.providers.HttpProvider('https://kovan.infura.io/'))
 ```
-Under the hood you have just created [truffle abstraction objects](https://github.com/trufflesuite/truffle-contract) for all of the uport contracts. For instance
+you've now have a `uport` object which has all other contract objects nested in it. *These* objects are [truffle abstraction objects](https://github.com/trufflesuite/truffle-contract).
+For instance
 
 ```javascript
 uport.Proxy            // Truffle 'contract abstraction object'
@@ -30,7 +38,9 @@ uport.RegistryV3       // Truffle 'contract abstraction object'
 A Truffle 'contract abstraction' object is basically a class based on the definition of the ethereum contract, but it is not tied to a specific instance or deployment of the contract.
 (See Truffle's [Contract Abstraction API)](https://github.com/trufflesuite/truffle-contract#contract-abstraction-api) for the full feature set.
 
-The Truffle contract abstraction object can be used to deploy or follow an (already deployed) instance of the contract. This creates a Truffle 'contract instance' which can read and write to the contract using the Truffle [Contract Instance API](https://github.com/trufflesuite/truffle-contract#contract-instance-api)
+
+
+The Truffle contract abstraction object can be used to deploy or follow an (already deployed) instance of the contract. This creates a Truffle 'contract instance' which can read and write to the contract using promise-based functions corresponding to their solidity functions [Contract Instance API](https://github.com/trufflesuite/truffle-contract#contract-instance-api)
 
 #### Singleton Contracts
 The `uport` variable from above exposes *all* our *contract abstractions* (using CapitalizedCamelCase) 
@@ -45,13 +55,13 @@ uport.deployed().then(function(){
   console.log(uport.registryV3)       // Truffle 'contract instance object'
 })
 ```
-Both the `identity factory` and uPort Registry (`registryV3`) are contracts which uPort has deployed onto the ethereum network. They both exist at a specific address and are intended to be shared by the community at large. I call these "singleton contracts". The `proxy` contract is not a singleton contract because it's something that each user has a separate deployment (instance) of.
+Both the `identity factory` and uPort Registry (`registryV3`) are contracts which uPort has deployed onto the ethereum network. These contracts exist at a specific address and are intended to be shared by the community. I call these "singleton contracts". The `proxy` contract is not a singleton contract because it's something that each user has a separate deployment (instance) of.
 
 The above function unfortunately is async, but if you specify a `network_id` you can execute it synchronously.
 ```javascript
-uport.deployed(3)
+uport.deployed(3)         // kovan network_id == 3
 uport.registryV3.address  // '0x5ef80c8db9ca50c85ba4ddf9910ed3854da293d8'
-                          //   ^^^ actual registryV3 address value! ^^^
+                          // ^^ magically knows the registryV3 address!
 ```
 ### Usage
 Whether using node or the browser, the objects exposed can now be used with the `provider` given to them.
@@ -93,41 +103,10 @@ Everything nested in the uport object follows the [truffle-contract](https://git
 
 More to follow
 -------
-## JavaScript integration
-Either install the package with npm in your `package.json` file:
-```
-"uport-contracts": "git://github.com/uport-project/uport-contracts.git#develop"
-```
-or simply download and include `dist.js` in an html file
-```
-<html>
-  <head>
-    <script type="text/javascript" src="dist.js"></script>
-  </head>
-  <body>
-    This page has global access to the `UportContracts` and `Web3` javascript objects.
-  </body>
-</html>
 
-```
-The library exposes a `UportContracts` object which has all other contract objects nested in it (i.e. `UportContracts.Registry`). These objects are built using truffle-contract [see full API](https://github.com/trufflesuite/truffle-contract). They have promise-based functions corresponding to their solidity functions, and once initialized with a [web3](https://github.com/ethereum/web3.js/) `provider`, will know their deployed address corresponding to the provided network.
 
-```javascript
-Web3 = require('web3');
 
-if (typeof web3 == 'undefined') {
-  web3 = new Web3(new Web3.providers.HttpProvider("https://ropsten.infura.io"));
-}
 
-UportContracts.Registry.setProvider(web3.currentProvider)
-UportContracts.Registry.deployed().then(function(instance){
-  uportRegistry = instance
-  console.log("Registry Address (ropsten): ", uportRegistry.address)
-  var someExistingUportAddress = "0x58471b238277224d2e1d0a3d07a40a9fe5bd485e"
-  return uportRegistry.getAttributes.call(someExistingUportAddress)
-}).then(function(encodedIpfsAddress) {
-  console.log("SelfSigned Attributes: ", encodedIpfsAddress)
-});
 
-```
+
 

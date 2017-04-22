@@ -3,7 +3,7 @@
   "main": "index.js",
   "version": "1.0.0",
   "scripts": {
-    "build": "node_modules/.bin/browserify lib.js -o dist.js"
+    "build": "node_modules/.bin/browserify index.js -o dist.js"
   },
   "author": "Zac Mitton",
   "dependencies": {

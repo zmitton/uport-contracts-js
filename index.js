@@ -43,7 +43,6 @@ class Uport{
           self.web3.version.getNetwork(function(e,network_id){
             if(e != null){ reject(e) }
             self.deployed(network_id)
-            console.log("SEFL: ", self)
             accept(self)
           })
         }else{
@@ -52,26 +51,6 @@ class Uport{
       })
     }
   }
-  // deployed(){
-  //   const self = this
-  //   return new Promise(function(accept, reject) {
-  //     if(self.web3.currentProvider){
-  //       self.web3.version.getNetwork(function(e,network_id){
-  //         if(e != null){ reject(e) }
-  //         self.network_id = network_id
-  //         self.contractList.forEach(function(contract_name) {
-  //           self[contract_name].network_id = self.network_id
-  //           if(self[contract_name].hasNetwork(self.network_id) && self[contract_name].networks[self.network_id].address){
-  //             self[self._unCapitalize(contract_name)] = self[contract_name].at(self[contract_name].networks[self.network_id].address)
-  //           }
-  //         })
-  //         accept(self)
-  //       })
-  //     }else{
-  //       reject(new Error('Error: Use setProvider() first or init with a provider'))
-  //     }
-  //   })
-  // }
 
   _unCapitalize(txt){
     return txt.replace(/^./, function (m) { return m.toLowerCase(); })
@@ -79,6 +58,10 @@ class Uport{
 }
 
 module.exports = Uport
+
+if (typeof window !== "undefined") {
+  window.Uport = Uport;
+}
 
 // var Web3 = require("web3")
 // web3 = new Web3(new Web3.providers.HttpProvider('https://kovan.infura.io/'))//remove
