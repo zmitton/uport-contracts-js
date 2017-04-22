@@ -1,0 +1,16 @@
+{
+  "name": "uport-contracts-js",
+  "main": "index.js",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "node_modules/.bin/browserify lib.js -o dist.js"
+  },
+  "author": "Zac Mitton",
+  "dependencies": {
+    "truffle-contract": "^2.0.0",
+    "uport-contracts": "file:../uport-contracts"
+  },
+  "devDependencies": {
+    "express": "^4.15.2"
+  }
+}
