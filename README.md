@@ -40,12 +40,12 @@ A Truffle 'contract abstraction' object is basically a class based on the defini
 
 
 
-The Truffle contract abstraction object can be used to deploy or follow an (already deployed) instance of the contract. This creates a Truffle 'contract instance' which can read and write to the contract using promise-based functions corresponding to their solidity functions [Contract Instance API](https://github.com/trufflesuite/truffle-contract#contract-instance-api)
+The Truffle contract abstraction object can be used to deploy or follow an (already deployed) instance of the contract. This creates a Truffle 'contract instance' which can read and write to the contract using promise-based functions corresponding to their solidity functions. See [Contract Instance API](https://github.com/trufflesuite/truffle-contract#contract-instance-api)
 
 #### Singleton Contracts
 The `uport` variable from above exposes *all* our *contract abstractions* (using CapitalizedCamelCase) 
 
-Furthermore, after calling the `deployed` function, it will initialize *contract instances* of *only* the contracts which "singleton contracts" (lowercaseCamelCase). For instance
+Furthermore, after calling the `deployed` function, it will initialize *contract instances* of *only* the contracts which are "singleton contracts" (lowercaseCamelCase). For instance the `identity factory` and uPort Registry (`registryV3`) are contracts which uPort has deployed onto the ethereum blockchain. These contracts exist at a specific address and are intended to be shared by the community. I call these "singleton contracts". The `proxy` contract is not a singleton contract because each user is intended to have a separate deployment (instance) of it.
 
 ```javascript
 uport.deployed().then(function(){
@@ -55,16 +55,13 @@ uport.deployed().then(function(){
   console.log(uport.registryV3)       // Truffle 'contract instance object'
 })
 ```
-Both the `identity factory` and uPort Registry (`registryV3`) are contracts which uPort has deployed onto the ethereum network. These contracts exist at a specific address and are intended to be shared by the community. I call these "singleton contracts". The `proxy` contract is not a singleton contract because it's something that each user has a separate deployment (instance) of.
-
 The above function unfortunately is async, but if you specify a `network_id` you can execute it synchronously.
 ```javascript
-uport.deployed(3)         // kovan network_id == 3
+uport.deployed(3)         // ropsten network_id == 3
 uport.registryV3.address  // '0x5ef80c8db9ca50c85ba4ddf9910ed3854da293d8'
                           // ^^ magically knows the registryV3 address!
 ```
 ### Usage
-Whether using node or the browser, the objects exposed can now be used with the `provider` given to them.
 
 #### Reading a Contract 
 Reading the uPort registry
@@ -76,7 +73,7 @@ uport.registryV3.get.call('uPortProfileIPFS1220', '0xb08e78b8E17dC2874818d7F4905
 You can see some real data (`0xb0f2...`) from the blockchain. More info on how to actually *interpret* this data coming soon. 
 
 #### Writing to/Deploying a Contract 
-If your `provider` is a local Ethereum node, Metamask, Mist, or Parity, you will be able to write and deploy contracts as well.
+If the `provider` is coming from Metamask, Mist, or Parity, you will be able to write and deploy contracts as well.
 
 Writing to the uPort registry
 ```javascript
@@ -85,12 +82,12 @@ uport.registryV3.set(
   web3.eth.coinbase,
   0x273EF783620B49D707885F6BBBCF1214CD0BC20D481FF31B00F67B612A5A53DD
 ).then(function(result){ /*Truffle result object */ })
-
+```
 Creating a Uport Account
 ```javascript
 uport.identityFactory.CreateProxyWithControllerAndRecovery(
   web3.eth.coinbase,                             //userkey (controls account)
-  [0xb08e78b8E17dC2874818d7F49055aBf08Ee9977D],  //delegates (for account recovery)
+  [web3.eth.accounts[1], web3.eth.accounts[2]],  //delegates (for account recovery)
   259200,                                        //timeLock (3 days for account recovery)
   5                                              //shortTimeLock (5 sec. effectively none)
 ).then(function(result){
@@ -99,7 +96,7 @@ uport.identityFactory.CreateProxyWithControllerAndRecovery(
 })
 ```
 ### API
-Everything nested in the uport object follows the [truffle-contract](https://github.com/trufflesuite/truffle-contract) API. Therefore, the contract instance objects have promise-based functions corresponding to all their solidity function names. Its useful to view the solidity contract code which is [held here](https://github.com/zmitton/uport-contracts).
+Everything nested in the uport object follows the [truffle-contract](https://github.com/trufflesuite/truffle-contract) API. The contract instance objects have promise-based functions corresponding to all their solidity function names. Therefore its useful to view the solidity contract code which is [held here](https://github.com/zmitton/uport-contracts).
 
 More to follow
 -------
